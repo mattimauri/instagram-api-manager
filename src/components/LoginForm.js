@@ -1,4 +1,14 @@
 import React, { useState } from 'react';
+import { 
+  LoginContainer, 
+  LoginTitle, 
+  FormGroup, 
+  Label, 
+  Input, 
+  Button, 
+  ErrorMessage,
+  LoginInfo
+} from '../styles';
 
 const LoginForm = ({ onLogin }) => {
   const [username, setUsername] = useState('');
@@ -33,14 +43,14 @@ const LoginForm = ({ onLogin }) => {
   };
 
   return (
-    <div className="login-container">
-      <h2>Accedi al tuo account Instagram</h2>
-      {error && <div className="error-message">{error}</div>}
+    <LoginContainer>
+      <LoginTitle>Accedi al tuo account Instagram</LoginTitle>
+      {error && <ErrorMessage>{error}</ErrorMessage>}
       
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="username">Username:</label>
-          <input
+        <FormGroup>
+          <Label htmlFor="username">Username:</Label>
+          <Input
             id="username"
             type="text"
             value={username}
@@ -48,11 +58,11 @@ const LoginForm = ({ onLogin }) => {
             required
             placeholder="Il tuo username Instagram"
           />
-        </div>
+        </FormGroup>
         
-        <div className="form-group">
-          <label htmlFor="password">Password:</label>
-          <input
+        <FormGroup>
+          <Label htmlFor="password">Password:</Label>
+          <Input
             id="password"
             type="password"
             value={password}
@@ -60,26 +70,25 @@ const LoginForm = ({ onLogin }) => {
             required
             placeholder="La tua password"
           />
-        </div>
+        </FormGroup>
         
-        <div className="form-actions">
-          <button 
+        <FormGroup>
+          <Button 
             type="submit" 
-            className="login-btn" 
             disabled={isLoading}
           >
             {isLoading ? 'Attendere...' : 'Accedi'}
-          </button>
-        </div>
+          </Button>
+        </FormGroup>
       </form>
       
-      <div className="login-info">
+      <LoginInfo>
         <p>
           <strong>Nota:</strong> Questa applicazione richiede l'accesso per pubblicare contenuti sul tuo account Instagram. 
           Le tue credenziali vengono utilizzate solo per l'autenticazione con Instagram.
         </p>
-      </div>
-    </div>
+      </LoginInfo>
+    </LoginContainer>
   );
 };
 

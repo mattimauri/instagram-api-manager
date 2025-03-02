@@ -1,4 +1,14 @@
 import React, { useState } from 'react';
+import { 
+  ActionContainer, 
+  ActionTitle, 
+  FormGroup, 
+  Label, 
+  Input, 
+  Button, 
+  StatusMessage,
+  Hint
+} from '../styles';
 
 const AddStory = ({ accessToken, userId }) => {
   const [imageUrl, setImageUrl] = useState('');
@@ -24,12 +34,12 @@ const AddStory = ({ accessToken, userId }) => {
   };
 
   return (
-    <div className="action-container">
-      <h2>Pubblica una nuova Story</h2>
+    <ActionContainer>
+      <ActionTitle>Pubblica una nuova Story</ActionTitle>
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="story-image">URL Immagine:</label>
-          <input
+        <FormGroup>
+          <Label htmlFor="story-image">URL Immagine:</Label>
+          <Input
             id="story-image"
             type="url"
             value={imageUrl}
@@ -37,14 +47,14 @@ const AddStory = ({ accessToken, userId }) => {
             placeholder="https://esempio.com/immagine.jpg"
             required
           />
-          <p className="hint">Deve essere un URL pubblicamente accessibile</p>
-        </div>
+          <Hint>Deve essere un URL pubblicamente accessibile</Hint>
+        </FormGroup>
         
-        <button type="submit" className="action-btn">Pubblica Story</button>
+        <Button type="submit">Pubblica Story</Button>
       </form>
       
-      {status && <p className="status-message">{status}</p>}
-    </div>
+      {status && <StatusMessage>{status}</StatusMessage>}
+    </ActionContainer>
   );
 };
 

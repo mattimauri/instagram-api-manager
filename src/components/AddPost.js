@@ -1,4 +1,15 @@
 import React, { useState } from 'react';
+import { 
+  ActionContainer, 
+  ActionTitle, 
+  FormGroup, 
+  Label, 
+  Input, 
+  TextArea,
+  Button, 
+  StatusMessage,
+  Hint
+} from '../styles';
 
 const AddPost = ({ accessToken, userId }) => {
   const [imageUrl, setImageUrl] = useState('');
@@ -26,12 +37,12 @@ const AddPost = ({ accessToken, userId }) => {
   };
 
   return (
-    <div className="action-container">
-      <h2>Pubblica un nuovo Post</h2>
+    <ActionContainer>
+      <ActionTitle>Pubblica un nuovo Post</ActionTitle>
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="post-image">URL Immagine:</label>
-          <input
+        <FormGroup>
+          <Label htmlFor="post-image">URL Immagine:</Label>
+          <Input
             id="post-image"
             type="url"
             value={imageUrl}
@@ -39,25 +50,25 @@ const AddPost = ({ accessToken, userId }) => {
             placeholder="https://esempio.com/immagine.jpg"
             required
           />
-          <p className="hint">Deve essere un URL pubblicamente accessibile</p>
-        </div>
+          <Hint>Deve essere un URL pubblicamente accessibile</Hint>
+        </FormGroup>
         
-        <div className="form-group">
-          <label htmlFor="post-caption">Didascalia:</label>
-          <textarea
+        <FormGroup>
+          <Label htmlFor="post-caption">Didascalia:</Label>
+          <TextArea
             id="post-caption"
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
             placeholder="Scrivi la didascalia del post..."
             rows="4"
           />
-        </div>
+        </FormGroup>
         
-        <button type="submit" className="action-btn">Pubblica Post</button>
+        <Button type="submit">Pubblica Post</Button>
       </form>
       
-      {status && <p className="status-message">{status}</p>}
-    </div>
+      {status && <StatusMessage>{status}</StatusMessage>}
+    </ActionContainer>
   );
 };
 
