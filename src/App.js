@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import './App.css';
 import LoginForm from './components/LoginForm';
 import Dashboard from './components/Dashboard';
+import { AppContainer, AppHeader, AppTitle } from './styles';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -30,9 +30,9 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Instagram API Manager</h1>
+    <AppContainer>
+      <AppHeader>
+        <AppTitle>Instagram API Manager</AppTitle>
         {!isLoggedIn ? (
           <LoginForm onLogin={handleLogin} />
         ) : (
@@ -43,8 +43,8 @@ function App() {
             onLogout={handleLogout}
           />
         )}
-      </header>
-    </div>
+      </AppHeader>
+    </AppContainer>
   );
 }
 

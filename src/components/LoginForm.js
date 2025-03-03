@@ -1,93 +1,98 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   LoginContainer, 
   LoginTitle, 
   FormGroup, 
-  Label, 
-  Input, 
   Button, 
   ErrorMessage,
-  LoginInfo
+  LoginInfo,
+  Hint
 } from '../styles';
 
 const LoginForm = ({ onLogin }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
+  
+  // Configura i parametri per l'autenticazione OAuth
+  // Sostituisci questa stringa con il tuo vero ID app numerico di Instagram
+  const clientId = '522160340900311'; // Esempio: sostituisci con il tuo ID app numerico
+  const redirectUri = window.location.origin; // L'URL della tua app
+  const scope = 'user_profile,instagram_content_publish'; // Permessi richiesti
+  
+  // Controlla se siamo tornati da un redirect OAuth
+  useEffect(() => {
+    // Cerca sia nei parametri URL che nel fragment (hash)
+    const urlParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    
+    // Instagram può restituire il token come parametro o nel fragment
+    const accessToken = urlParams.get('access_token') || hashParams.get('access_token');
+    
+    if (accessToken) {
+      // Rimuovi i parametri dall'URL per sicurezza
+      window.history.replaceState({}, document.title, window.location.pathname);
+      
+      // Abbiamo ricevuto un token, ora otteniamo le informazioni dell'utente
+      fetchUserInfo(accessToken);
+    }
+  }, []);
+  
+  const fetchUserInfo = async (token) => {
     setIsLoading(true);
-
     try {
-      // In un'app reale, qui faresti una chiamata API al backend
-      // per autenticare l'utente con Instagram
+      // Chiamata per ottenere le informazioni dell'utente
+      const response = await fetch(`https://graph.instagram.com/me?fields=id,username&access_token=${token}`);
+      const userData = await response.json();
       
-      // Simulazione di una chiamata API
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (userData.error) {
+        throw new Error(userData.error.message || 'Errore nel recupero delle informazioni utente');
+      }
       
-      // Per questa demo, simuliamo un token e un ID utente
-      // In una vera implementazione, questi verrebbero dalla risposta API
-      const mockToken = 'mock_instagram_token_' + Math.random().toString(36).substring(7);
-      const mockUserId = '12345678';
-      
-      onLogin(username, mockToken, mockUserId);
+      // Chiamiamo onLogin con username, token e ID utente
+      onLogin(userData.username, token, userData.id);
     } catch (err) {
-      setError('Errore di autenticazione. Riprova.');
+      setError(`Errore durante l'autenticazione: ${err.message}`);
       console.error('Login error:', err);
     } finally {
       setIsLoading(false);
     }
   };
-
+  
+  const handleInstagramLogin = () => {
+    setIsLoading(true);
+    
+    // L'URL di autorizzazione per Instagram
+    const authUrl = `https://api.instagram.com/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&response_type=token`;
+    
+    // Reindirizza l'utente alla pagina di login di Instagram
+    window.location.href = authUrl;
+  };
+  
   return (
     <LoginContainer>
-      <LoginTitle>Accedi al tuo account Instagram</LoginTitle>
+      <LoginTitle>Accedi con il tuo account Instagram</LoginTitle>
       {error && <ErrorMessage>{error}</ErrorMessage>}
       
-      <form onSubmit={handleSubmit}>
-        <FormGroup>
-          <Label htmlFor="username">Username:</Label>
-          <Input
-            id="username"
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-            placeholder="Il tuo username Instagram"
-          />
-        </FormGroup>
-        
-        <FormGroup>
-          <Label htmlFor="password">Password:</Label>
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            placeholder="La tua password"
-          />
-        </FormGroup>
-        
-        <FormGroup>
-          <Button 
-            type="submit" 
-            disabled={isLoading}
-          >
-            {isLoading ? 'Attendere...' : 'Accedi'}
-          </Button>
-        </FormGroup>
-      </form>
+      <FormGroup>
+        <Button 
+          type="button" 
+          onClick={handleInstagramLogin}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Attendere...' : 'Accedi con Instagram'}
+        </Button>
+      </FormGroup>
       
       <LoginInfo>
         <p>
-          <strong>Nota:</strong> Questa applicazione richiede l'accesso per pubblicare contenuti sul tuo account Instagram. 
-          Le tue credenziali vengono utilizzate solo per l'autenticazione con Instagram.
+          <strong>Nota:</strong> Verrai reindirizzato al sito ufficiale di Instagram per effettuare l'accesso in modo sicuro.
+          Questa app avrà accesso solo ai permessi che autorizzerai.
         </p>
       </LoginInfo>
+      
+      <Hint style={{ marginTop: '20px' }}>
+        L'app utilizza l'autenticazione sicura di Instagram. Nessuna password viene memorizzata o gestita da questa applicazione.
+      </Hint>
     </LoginContainer>
   );
 };
